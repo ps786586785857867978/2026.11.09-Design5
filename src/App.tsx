@@ -29,7 +29,7 @@ function durationForSentence(duration: string) {
 }
 
 export default function App() {
-  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [step, setStep] = useState<1 | 2 | 3 | 4>(1)
   const [selectedService, setSelectedService] = useState(0)
   const [selectedDay, setSelectedDay] = useState('Today')
   const [selectedTime, setSelectedTime] = useState('16:30')
@@ -42,11 +42,23 @@ export default function App() {
 
   const goBack = () => setStep((current) => Math.max(1, current - 1) as 1 | 2 | 3)
   const goForward = () => setStep((current) => Math.min(3, current + 1) as 1 | 2 | 3)
-  const confirmBooking = () => setSubmitted(true)
+  const confirmBooking = () => {
+    setSubmitted(true)
+
+    if (name.trim() && phone.trim()) {
+      setStep(4)
+    }
+  }
+  const bookAnotherRepair = () => {
+    setName('')
+    setPhone('')
+    setSubmitted(false)
+    setStep(1)
+  }
 
   return (
     <main className="app">
-      <TopBar step={step} onBack={goBack} />
+      <TopBar step={step} onBack={step > 1 && step < 4 ? goBack : undefined} />
 
       {step === 1 && (
         <section className="screen-content" aria-labelledby="screen-title">
@@ -128,7 +140,24 @@ export default function App() {
         </section>
       )}
 
-      <ActionBar label={step === 3 ? 'Confirm booking' : 'Continue'} onAction={step === 3 ? confirmBooking : goForward} />
+      {step === 4 && (
+        <section className="screen-content booking-confirmation" aria-labelledby="screen-title" role="status">
+          <span className="booking-confirmation__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="m5 12 4 4 10-10" />
+            </svg>
+          </span>
+          <h1 className="screen-title" id="screen-title">You’re booked</h1>
+          <p className="booking-confirmation__message">We’ll text you when your bike is ready.</p>
+          <Summary service={service.title} dropOff={`${selectedDay} at ${selectedTime}`} price={service.price} />
+          <p className="screen-helper">Bring your bike to the shop at your selected drop-off time. You pay when you pick it up.</p>
+        </section>
+      )}
+
+      <ActionBar
+        label={step === 4 ? 'Book another repair' : step === 3 ? 'Confirm booking' : 'Continue'}
+        onAction={step === 4 ? bookAnotherRepair : step === 3 ? confirmBooking : goForward}
+      />
     </main>
   )
 }
