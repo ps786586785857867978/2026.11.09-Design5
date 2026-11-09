@@ -1,0 +1,109 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  font-family: var(--font-family);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+}
+
+button {
+  font: inherit;
+}
+
+.app {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background: var(--color-background);
+}
+
+.screen-content {
+  width: 100%;
+  max-width: 390px;
+  margin: 0 auto;
+  padding: var(--space-20) var(--space-20) var(--space-24);
+}
+
+.screen-title {
+  margin: 0;
+  font-size: var(--font-display-size);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-display-line-height);
+}
+
+.screen-subtitle {
+  margin: 0 0 var(--space-24);
+  color: var(--color-text-muted);
+  font-size: var(--font-small-size);
+  line-height: var(--font-small-line-height);
+}
+
+.screen-description {
+  margin: 0 0 var(--space-20);
+  color: var(--color-text-muted);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+}
+
+.screen-title--spaced {
+  margin-bottom: var(--space-24);
+}
+
+.service-list {
+  display: grid;
+  gap: var(--space-12);
+}
+
+.booking-group {
+  margin: 0 0 var(--space-20);
+  padding: 0;
+  border: 0;
+}
+
+.booking-group legend {
+  margin-bottom: var(--space-8);
+  padding: 0;
+  font-size: var(--font-title-size);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--font-title-line-height);
+}
+
+.day-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+}
+
+.time-list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-8);
+}
+
+.screen-helper {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--font-body-size);
+  line-height: var(--font-body-line-height);
+}
+
+.booking-form {
+  display: grid;
+  gap: var(--space-24);
+  margin-top: var(--space-24);
+}
+
+.screen-helper--form {
+  margin-top: var(--space-16);
+}

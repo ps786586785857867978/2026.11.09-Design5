@@ -1,122 +1,134 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { ActionBar } from './components/ActionBar'
+import { Input } from './components/Input'
+import { ServiceCard } from './components/ServiceCard'
+import { Summary } from './components/Summary'
+import { TimeSlot } from './components/TimeSlot'
+import { TopBar } from './components/TopBar'
+import './styles/app.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const services = [
+  { title: 'Flat tyre repair', description: 'Tube or tyre swap, any wheel size.', price: '€15', duration: '30 min' },
+  { title: 'Brake check and adjust', description: 'Pads, cables and alignment.', price: '€25', duration: '45 min' },
+  { title: 'Gear tune-up', description: 'Smooth shifting on every gear.', price: '€30', duration: '45 min' },
+  { title: 'Full service', description: 'Everything checked, cleaned and adjusted.', price: '€89', duration: '2 hours' },
+]
 
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+const days = ['Today', 'Tomorrow', 'Mon 16']
+const times = [
+  { label: '09:00', disabled: true },
+  { label: '10:30', disabled: true },
+  { label: '12:00' },
+  { label: '14:00' },
+  { label: '16:30' },
+  { label: '17:30' },
+]
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
-  )
+function durationForSentence(duration: string) {
+  return duration === '30 min' ? '30 minutes' : duration === '45 min' ? '45 minutes' : duration
 }
 
-export default App
+export default function App() {
+  const [step, setStep] = useState<1 | 2 | 3>(1)
+  const [selectedService, setSelectedService] = useState(0)
+  const [selectedDay, setSelectedDay] = useState('Today')
+  const [selectedTime, setSelectedTime] = useState('16:30')
+  const [name, setName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const service = services[selectedService]
+  const nameError = submitted && !name.trim() ? 'Enter your first and last name.' : undefined
+  const phoneError = submitted && !phone.trim() ? 'Enter your phone number.' : undefined
+
+  const goBack = () => setStep((current) => Math.max(1, current - 1) as 1 | 2 | 3)
+  const goForward = () => setStep((current) => Math.min(3, current + 1) as 1 | 2 | 3)
+  const confirmBooking = () => setSubmitted(true)
+
+  return (
+    <main className="app">
+      <TopBar step={step} onBack={goBack} />
+
+      {step === 1 && (
+        <section className="screen-content" aria-labelledby="screen-title">
+          <h1 className="screen-title" id="screen-title">Choose a service</h1>
+          <p className="screen-subtitle">What does your bike need?</p>
+          <div className="service-list">
+            {services.map((item, index) => (
+              <ServiceCard
+                key={item.title}
+                {...item}
+                selected={selectedService === index}
+                onSelect={() => setSelectedService(index)}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {step === 2 && (
+        <section className="screen-content" aria-labelledby="screen-title">
+          <h1 className="screen-title" id="screen-title">Pick a drop-off time</h1>
+          <p className="screen-description">{service.title}, about {durationForSentence(service.duration)}</p>
+
+          <fieldset className="booking-group">
+            <legend>Day</legend>
+            <div className="day-list">
+              {days.map((day) => (
+                <TimeSlot key={day} label={day} selected={selectedDay === day} onSelect={() => setSelectedDay(day)} />
+              ))}
+            </div>
+          </fieldset>
+
+          <fieldset className="booking-group">
+            <legend>Drop-off time</legend>
+            <div className="time-list">
+              {times.map((time) => (
+                <TimeSlot
+                  key={time.label}
+                  label={time.label}
+                  disabled={time.disabled}
+                  selected={selectedTime === time.label}
+                  onSelect={() => setSelectedTime(time.label)}
+                />
+              ))}
+            </div>
+          </fieldset>
+
+          <p className="screen-helper">Ready the same day. We text you when your bike is done.</p>
+        </section>
+      )}
+
+      {step === 3 && (
+        <section className="screen-content" aria-labelledby="screen-title">
+          <h1 className="screen-title screen-title--spaced" id="screen-title">Check and confirm</h1>
+          <Summary service={service.title} dropOff={`${selectedDay} at ${selectedTime}`} price={service.price} />
+          <form className="booking-form" onSubmit={(event) => event.preventDefault()}>
+            <Input
+              id="customer-name"
+              label="Your name"
+              error={nameError}
+              required
+              placeholder="First and last name"
+              value={name}
+              onChange={(event) => setName(event.target.value)}
+            />
+            <Input
+              id="customer-phone"
+              accent
+              label="Phone number"
+              error={phoneError}
+              required
+              inputMode="tel"
+              placeholder="+32 470 12 34 56"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+            />
+          </form>
+          <p className="screen-helper screen-helper--form">We text you when your bike is ready. You pay when you pick it up.</p>
+        </section>
+      )}
+
+      <ActionBar label={step === 3 ? 'Confirm booking' : 'Continue'} onAction={step === 3 ? confirmBooking : goForward} />
+    </main>
+  )
+}
